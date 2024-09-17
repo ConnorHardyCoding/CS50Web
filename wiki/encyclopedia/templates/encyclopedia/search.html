@@ -6,16 +6,15 @@
 
 {% block body %}
     <h1>Search results</h1>
-
+    {% if entries %}
     <ul>
-        {% if entries %}
+        
             {% for entry in entries %}
-                <li><a href="{{ entry }}">{{ entry }}</a></li>
+                <li><a href="{% url 'entry' entry %}">{{ entry }}</a></li>
             {% endfor %}
-        {% else %}
-        No search results...
-        {% endif %}
         
     </ul>
-
+    {% else %}
+    No search results for {{ query }}
+    {% endif %}
 {% endblock %}

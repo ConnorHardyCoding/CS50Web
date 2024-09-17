@@ -7,17 +7,13 @@
 {% block body %}
     {% if entry == None %}
         <h1>Error</h1>
-    {% else %}
-        <h1>{{title|capfirst}}
-            <a style="font-size: 18px;" href="{% url 'edit' %}">edit</a>
-        </h1>
-
     {% endif %}
 
     {% if entry == None %}
-        No such wiki entry exists...
+        No wiki entry exists for {{ title }}...
     {% else %}
-        {{entry}}
+        {{entry|safe}}
+        <a href="{% url 'edit' title %}">edit entry</a>
     {% endif %}
-
+    
 {% endblock %}

@@ -1,17 +1,18 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django import forms
 from . import util
-import re
 from random import choice
+import markdown2 as md
 
 class QueryForm(forms.Form):
     query = forms.CharField()
 
 class EntryForm(forms.Form):
     title = forms.CharField()
-    entry = forms.CharField(widget=forms.Textarea(attrs={
-        'style': 'width: 80%; height: 50vh;'
-    }))
+    entry = forms.CharField(widget=forms.Textarea(attrs={'style': 'width: 80%; height: 50vh;'}), initial="")
+
+class EditForm(forms.Form):
+    entry = forms.CharField(widget=forms.Textarea(attrs={'style': 'width: 80%; height: 50vh;'}), initial="")
 
 def index(request):
 
@@ -20,9 +21,12 @@ def index(request):
     })
 
 def entry_page(request, title=""):
-
+    if title in util.list_entries():
+        entry = md.markdown(util.get_entry(title))
+    else:
+        entry = None
     return render(request, "encyclopedia/encyclopedia.html", {
-        "entry": util.get_entry(title),
+        "entry": entry,
         "title": title
     })
 
@@ -54,6 +58,9 @@ def search(request):
     form = QueryForm(request.GET)
     if form.is_valid():
         query = form.cleaned_data["query"]
+        for item in util.list_entries():
+            if query.lower() == item.lower():
+                query = item
         if util.get_entry(query) == None:
             search_list = [x for x in util.list_entries() if query.lower() in x.lower()]
             return render(request, "encyclopedia/search.html", {
@@ -61,17 +68,30 @@ def search(request):
                 "query": query
             })
         else:
-            return render(request, "encyclopedia/encyclopedia.html", {
-                "entry": util.get_entry(query),
-                "title": query
-            })
+            return redirect('entry', query)
 
 def random(request):
     title = choice(util.list_entries())
-    return render(request, "encyclopedia/encyclopedia.html", {
-        "entry": util.get_entry(title),
+    return redirect('entry', title)
+
+def edit(request, title):
+    if request.method == "POST":
+        form = EditForm(request.POST)
+        if form.is_valid():
+            entry = form.cleaned_data["entry"]
+            util.save_entry(title, entry)
+            return render(request, "encyclopedia/encyclopedia.html", {
+            "entry": util.get_entry(title),
+            "title": title
+            })
+    initial_data = {
+        "title": title,
+        "entry": util.get_entry(title)
+    }
+    form = EntryForm(initial=initial_data)
+    return render(request, "encyclopedia/edit.html", {
+        "forms": form,
         "title": title
     })
 
-def edit(request):
-    pass
+    
