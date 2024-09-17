@@ -21,6 +21,9 @@ def index(request):
     })
 
 def entry_page(request, title=""):
+    for item in util.list_entries():
+            if title.lower() == item.lower():
+                title = item
     if title in util.list_entries():
         entry = md.markdown(util.get_entry(title))
     else:
@@ -39,10 +42,7 @@ def create(request):
             entry = form.cleaned_data["entry"]
             if title not in util.list_entries():
                 util.save_entry(title, entry)
-                return render(request, "encyclopedia/encyclopedia.html", {
-                "entry": util.get_entry(title),
-                "title": title
-            })
+                return redirect('entry', title)
 
             else:
                 return render(request, "encyclopedia/create.html", {
@@ -80,10 +80,7 @@ def edit(request, title):
         if form.is_valid():
             entry = form.cleaned_data["entry"]
             util.save_entry(title, entry)
-            return render(request, "encyclopedia/encyclopedia.html", {
-            "entry": util.get_entry(title),
-            "title": title
-            })
+            return redirect('entry', title)
     initial_data = {
         "title": title,
         "entry": util.get_entry(title)
