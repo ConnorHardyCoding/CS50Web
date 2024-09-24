@@ -1,0 +1,36 @@
+body {
+    padding: 10px;
+}
+
+.input_field {
+    border-radius: 3px;
+    border-width: 2px;
+    border-color: lightgrey;
+    outline-color: lightblue;
+    padding: 6px 10px;
+    width: 300px;
+    height: 38px;
+    box-sizing: border-box;
+    
+}
+
+.input_field:focus {
+    box-shadow: 3px 3px rgba(151, 219, 235, 0.5);
+}
+
+.textarea_input {
+    width: 50%;
+    height: 20vh;
+    min-width: 500px;
+    border-radius: 3px;
+    border-width: 2px;
+    border-color: lightgrey;
+    outline-color: lightblue;
+    padding: 6px 10px;
+    box-sizing: border-box;
+}
+
+.textarea_input:focus {
+    box-shadow: 3px 3px 4px  rgba(151, 219, 235, 0.5);
+}
+
